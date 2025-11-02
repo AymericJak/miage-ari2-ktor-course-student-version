@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="~{fragments/head :: head(${title})}"></head>
+	<body>
+		<header th:replace="~{fragments/header :: header(${title})}"></header>
+
+		<main>
+			<section class="section">
+				<h2 th:text="'Résultats pour « ' + ${q} + ' »'">Résultats</h2>
+
+				<p>
+					<strong>Paramètres :</strong>
+					<span class="pill" th:text="'q=' + ${q}">q=...</span>
+					<span class="pill" th:if="${hasImages}">hasImages=true</span>
+				</p>
+
+				<p class="muted" th:text="'Total côté MET : ' + ${total} + ' - Affichés ici : ' + ${resultsCount}">…</p>
+
+				<div class="gallery" th:if="${!#lists.isEmpty(works)}">
+					<article th:each="w : ${works}" class="card figure">
+						<a th:href="${w.objectURL}" target="_blank" rel="noreferrer" class="frame">
+							<img
+									th:src="${#strings.isEmpty(w.primaryImageSmall) ? ( #strings.isEmpty(w.primaryImage) ? '/static/no-image.png' : w.primaryImage ) : w.primaryImageSmall}"
+									th:alt="'Image de ' + ${w.title}"/>
+						</a>
+
+						<h3 th:text="${w.title}">Titre</h3>
+						<p class="meta"><strong>Artiste :</strong> <span th:text="${w.artistDisplayName}">Nom</span></p>
+						<p th:if="${w.objectDate}" class="muted" th:text="${w.objectDate}">Date</p>
+
+						<div>
+							<a th:href="${'/art/work/' + w.objectID}">Détails API</a>
+							<span> - </span>
+							<a th:href="${w.objectURL}" target="_blank" rel="noreferrer">Fiche MET</a>
+						</div>
+					</article>
+				</div>
+
+				<p th:if="${#lists.isEmpty(works)}" class="muted">Aucun résultat avec ces critères.</p>
+			</section>
+		</main>
+
+		<footer th:replace="~{fragments/footer :: footer()}"></footer>
+	</body>
+</html>

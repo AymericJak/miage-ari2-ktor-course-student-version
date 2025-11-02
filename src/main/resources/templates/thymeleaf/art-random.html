@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="~{fragments/head :: head(${title})}"></head>
+	<body>
+		<header th:replace="~{fragments/header :: header(${title})}"></header>
+
+		<main>
+			<section class="section">
+				<h2>Œuvre aléatoire</h2>
+
+				<div class="artwork" th:if="${work != null}">
+					<div class="frame"
+						 th:if="${(work.primaryImageSmall != null and !#strings.isEmpty(work.primaryImageSmall)) or (work.primaryImage != null and !#strings.isEmpty(work.primaryImage))}">
+						<img th:src="${#strings.isEmpty(work.primaryImageSmall) ? work.primaryImage : work.primaryImageSmall}"
+							 th:alt="'Image de ' + ${work.title}"/>
+					</div>
+
+					<p th:if="${(#strings.isEmpty(work.primaryImageSmall) or work.primaryImageSmall == null)
+		           and (#strings.isEmpty(work.primaryImage) or work.primaryImage == null)}"
+					   class="muted">
+						Image non disponible (droits d'auteur ou non numérisée)
+					</p>
+
+					<h3 th:text="${work.title}">Titre</h3>
+					<p class="meta"><strong>Artiste :</strong> <span th:text="${work.artistDisplayName}">Nom</span></p>
+					<p><strong>Date :</strong> <span th:text="${work.objectDate}">Date</span></p>
+					<p><strong>Dimensions :</strong> <span th:text="${work.dimensions}">—</span></p>
+
+					<p>
+						<a th:href="${work.objectURL}" target="_blank" rel="noreferrer">Voir sur le site du MET</a>
+					</p>
+				</div>
+
+				<p th:if="${work == null}" class="muted">Aucune œuvre disponible pour le moment.</p>
+			</section>
+		</main>
+
+		<footer th:replace="~{fragments/footer :: footer()}"></footer>
+	</body>
+</html>

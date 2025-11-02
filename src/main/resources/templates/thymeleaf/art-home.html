@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="~{fragments/head :: head(${title})}"></head>
+	<body>
+		<header th:replace="~{fragments/header :: header(${title})}"></header>
+
+		<main>
+			<!-- Recherche -->
+			<section class="section">
+				<h2>Recherche</h2>
+				<form action="/art/search/view" method="get" class="searchbar">
+					<input type="text" name="q" placeholder="Rechercher une œuvre ou un artiste" required/>
+					<label class="toggle">
+						<input type="checkbox" name="hasImages" value="true"/>
+						hasImages
+					</label>
+					<button type="submit">Rechercher</button>
+				</form>
+			</section>
+
+			<section class="section">
+				<h2>Œuvres mises en avant</h2>
+
+				<p th:if="${#lists.isEmpty(featured)}" class="muted">Aucune œuvre à afficher.</p>
+
+				<div th:if="${!#lists.isEmpty(featured)}" class="gallery">
+					<figure class="figure" th:each="w : ${featured}">
+						<a class="frame" th:href="${w.objectURL}" target="_blank" rel="noreferrer">
+							<img
+									th:src="${#strings.isEmpty(w.primaryImageSmall) ? ( #strings.isEmpty(w.primaryImage) ? '/static/no-image.png' : w.primaryImage ) : w.primaryImageSmall}"
+									th:alt="'Image de ' + ${w.title}"/>
+						</a>
+
+						<figcaption class="figure-body">
+							<h3 th:text="${w.title}">Titre</h3>
+							<p class="meta">
+								<strong>Artiste :</strong> <span th:text="${w.artistDisplayName}">Nom</span>
+							</p>
+							<p th:if="${w.objectDate != null and !#strings.isEmpty(w.objectDate)}"
+							   class="muted" th:text="${w.objectDate}">—</p>
+							<p>
+								<a th:href="${'/art/work/' + w.objectID}">Détails API</a>
+								<span> - </span>
+								<a th:href="${w.objectURL}" target="_blank" rel="noreferrer">Fiche MET</a>
+							</p>
+						</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2>Départements du MET</h2>
+				<p class="muted" th:text="'Total : ' + ${#lists.size(departments.departments)} + ' départements'">Total
+					: …</p>
+
+				<ul class="dept-list">
+					<li th:each="d : ${departments.departments}" class="dept">
+						<div class="dept-title" th:text="${d.displayName}">Nom du département</div>
+						<div class="dept-id" th:text="'#' + ${d.departmentId}">#1</div>
+					</li>
+				</ul>
+			</section>
+		</main>
+
+		<footer th:replace="~{fragments/footer :: footer()}"></footer>
+	</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8"/>
+		<title th:text="${title}">KtorChef - Tableau de bord</title>
+		<link rel="stylesheet" href="/static/intro.css"/>
+	</head>
+	<body>
+		<header class="header">
+			<div class="header__top">
+				<h1 th:text="${title}">KtorChef - Tableau de bord</h1>
+				<span class="badge">/intro — Partie 1</span>
+			</div>
+			<div class="flagbar" aria-hidden="true"></div>
+		</header>
+
+		<main class="container">
+			<!-- KPI -->
+			<section class="cards">
+				<div class="card">
+					<h2>Ingrédients</h2>
+					<p class="card__value" th:text="${ingredients.size()}">0</p>
+				</div>
+				<div class="card">
+					<h2>Plats</h2>
+					<p class="card__value" th:text="${dishPrices.size()}">0</p>
+				</div>
+				<div class="card">
+					<h2>Commandes</h2>
+					<p class="card__value" th:text="${orders.size()}">0</p>
+				</div>
+				<div class="card">
+					<h2>Recette du jour</h2>
+					<ul class="pills">
+						<li th:text="${todayRecipe}">Pizza Margherita</li>
+					</ul>
+				</div>
+			</section>
+
+			<!-- Ingrédients -->
+			<section class="card">
+				<h2 class="h2">Ingrédients</h2>
+				<ul class="pills">
+					<li th:each="ing : ${ingredients}" th:text="${ing}">tomate</li>
+				</ul>
+			</section>
+
+			<!-- Idées recettes -->
+			<section class="card">
+				<h2 class="h2">Idées recettes</h2>
+				<ul class="pills">
+					<li th:each="r : ${recipes}" th:text="${r}">Bruschetta</li>
+				</ul>
+			</section>
+
+			<!-- Commandes -->
+			<section class="card">
+				<h2 class="h2">Dernières commandes</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Plat</th>
+							<th>Quantité</th>
+							<th>Total (€)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(orders)}">
+							<td colspan="3" class="muted">Aucune commande pour le moment.</td>
+						</tr>
+						<tr th:each="o : ${orders}">
+							<td th:text="${o.dish}">margherita</td>
+							<td th:text="${o.quantity}">2</td>
+							<td th:text="${#numbers.formatDecimal(o.total, 1, 'COMMA', 2, 'POINT')}">22.00</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<footer class="footer">
+				Projet de cours <strong>ARI2</strong> - Université de Lille
+			</footer>
+		</main>
+	</body>
+</html>
