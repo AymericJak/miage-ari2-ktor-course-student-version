@@ -16,8 +16,8 @@ fun Application.registerArtRoutes() {
     routing {
         route("/art") {
             get {
-//                val featured: List<MetObject> = gallery.featuredSequential()
-                val featured: List<MetObject> = gallery.featuredParallel()
+                val featured: List<MetObject> = gallery.featuredSequential()
+//                val featured: List<MetObject> = gallery.featuredParallel()
                 val departments = met.getDepartments()
 
                 val model = mapOf(
@@ -37,8 +37,8 @@ fun Application.registerArtRoutes() {
             }
 
             get("/objects") {
-//                val resp = met.getObjectsIndex()
-                val resp = met.getObjectsIndexWithCache()
+                val resp = met.getObjectsIndex()
+//                val resp = met.getObjectsIndexWithCache()
                 call.respond(resp)
             }
 
