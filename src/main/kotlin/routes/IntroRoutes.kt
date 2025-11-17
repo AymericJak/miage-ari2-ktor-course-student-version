@@ -42,6 +42,18 @@ fun Application.registerIntroRoutes() {
             // 5) Chercher un ingrédient (query param + texte)
             get("/ingredients/search") {
                 val ingredientParam = call.request.queryParameters["name"]
+
+                if (ingredientParam.isNullOrBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, Message("Paramètre 'name' requis"))
+                }
+
+                val found = Store.ingredients.any { it.equals(ingredientParam, ignoreCase = true) }
+
+                if (found) {
+                    call.respondText("L’ingrédient \"$ingredientParam\" est disponible !")
+                } else {
+                    call.respondText("Désolé, \"$ingredientParam\" n’est pas encore au menu.")
+                }
             }
 
             // 6) Ajouter un ingrédient (POST JSON)
