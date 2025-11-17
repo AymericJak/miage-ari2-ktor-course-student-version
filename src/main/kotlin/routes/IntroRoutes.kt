@@ -58,22 +58,74 @@ fun Application.registerIntroRoutes() {
 
             // 6) Ajouter un ingrédient (POST JSON)
             post("/ingredients") {
+                val req = call.receive<AddIngredientRequest>()
+                val name = req.name.trim()
+                if (name.isEmpty()) {
+                    return@post call.respond(HttpStatusCode.BadRequest, Message("Nom d'ingrédient vide"))
+                }
+                val exists = Store.ingredients.any { it.equals(name, ignoreCase = true) }
+                if (!exists) Store.ingredients.add(name) // À NE PAS FAIRE NUL PART (MERCI) !
+                call.respond(HttpStatusCode.Created, Message("Ingrédient '$name' ajouté avec succès !"))
             }
 
             // 7) Calories d’un plat (JSON)
             get("/calories") {
+                val dish = call.request.queryParameters["dish"]?.trim()
+                if (dish.isNullOrEmpty()) {
+                    return@get call.respond(HttpStatusCode.BadRequest, Message("Paramètre 'dish' requis"))
+                }
+
+                val entry = Store.dishCalories.entries.firstOrNull { it.key.equals(dish, ignoreCase = true) }
+                if (entry == null) {
+                    return@get call.respond(HttpStatusCode.NotFound, Message("Plat inconnu"))
+                }
+                call.respond(CaloriesOut(entry.key, entry.value))
             }
 
             // 8) Simuler une commande (POST JSON)
             post("/order") {
+                val req = call.receive<OrderIn>()
+                val dish = req.dish.trim()
+                val qty = req.quantity
+
+                if (dish.isEmpty() || qty <= 0) {
+                    return@post call.respond(HttpStatusCode.BadRequest, Message("Plat invalide ou quantité <= 0"))
+                }
+
+                val entry = Store.dishPrices.entries.firstOrNull { it.key.equals(dish, ignoreCase = true) }
+                if (entry == null) {
+                    return@post call.respond(HttpStatusCode.NotFound, Message("Plat inconnu"))
+                }
+
+                val total = entry.value * qty
+                Store.orders.add(OrderOut(entry.key, qty, total))
+
+                call.respond(HttpStatusCode.Created,
+                    mapOf(
+                        "confirmation" to "Commande reçue : ${qty}x ${entry.key}",
+                        "total" to total.toString()
+                    )
+
+                )
             }
 
             // 9) Historique des commandes (JSON)
             get("/orders") {
+                call.respond(Store.orders.asReversed())
             }
 
             // 10) Afficher une page HTML (Thymeleaf)
             get("/home") {
+                val model = mapOf(
+                    "title" to "KtorChef - Tableau de bord",
+                    "ingredients" to Store.ingredients,
+                    "dishPrices" to Store.dishPrices,
+                    "orders" to Store.orders.asReversed(),
+                    "recipes" to Store.recipesOfTheDay,
+                    "todayRecipe" to Store.recipesOfTheDay.random()
+                )
+                call.respond(ThymeleafContent("intro-kitchen", model))
+
             }
         }
     }
