@@ -19,22 +19,29 @@ fun Application.registerIntroRoutes() {
 
             // 1) Dire bonjour au chef (texte)
             get("/hello") {
+                call.respondText("Bienvenue dans la cuisine de KtorChef !")
             }
 
             // 2) Saluer un cuisinier (path param)
             get("/greet/{name}") {
+                val name = call.parameters["name"]
+                call.respondText("Bonjour Chef $name ! Prêt à cuisiner ?")
             }
 
             // 3) Recette du jour (texte)
             get("/recipe") {
+                val recipe = Store.recipesOfTheDay.random()
+                call.respondText("Recette du jour : $recipe")
             }
 
             // 4) Liste des ingrédients (JSON)
             get("/ingredients") {
+                call.respond(Store.ingredients)
             }
 
             // 5) Chercher un ingrédient (query param + texte)
             get("/ingredients/search") {
+                val ingredientParam = call.request.queryParameters["name"]
             }
 
             // 6) Ajouter un ingrédient (POST JSON)
