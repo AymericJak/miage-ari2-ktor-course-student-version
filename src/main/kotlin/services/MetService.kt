@@ -47,8 +47,10 @@ class MetService {
     )
 
     // Q1 - Départements
-    suspend fun getDepartments(): MetDepartments {
-        return MetDepartments(emptyList())
+    suspend fun getDepartments(): MetDepartments = try {
+        client.get("https://collectionapi.metmuseum.org/public/collection/v1/departments").body()
+    } catch (_: Exception) {
+        MetDepartments(emptyList())
     }
 
     // Q2 - Détails d’une œuvre par id
