@@ -53,9 +53,29 @@ class MetService {
         MetDepartments(emptyList())
     }
 
+//    suspend fun getDepartments(): MetDepartments {
+//         return client.get("https://collectionapi.metmuseum.org/public/collection/v1/departments").body<MetDepartments>()
+//    }
+
     // Q2 - Détails d’une œuvre par id
     suspend fun getObject(objectID: Int): MetObject? {
-        return null
+        return try {
+            val res: ObjectResponse = client.get("https://collectionapi.metmuseum.org/public/collection/v1/objects/$objectID").body()
+
+            MetObject(
+                objectID = res.objectID,
+                title = res.title,
+                artistDisplayName = res.artistDisplayName,
+                primaryImage = res.primaryImage,
+                primaryImageSmall = res.primaryImageSmall,
+                objectDate = res.objectDate,
+                dimensions = res.dimensions,
+                publicDomain = res.publicDomain,
+                objectURL = res.objectURL
+            )
+        } catch (_: Exception) {
+            null
+        }
     }
 
     // Q6 - Index global des IDs (appel direct)
